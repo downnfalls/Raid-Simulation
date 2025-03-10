@@ -104,6 +104,7 @@ raid5.addHDD(hdd2)
 raid5.addHDD(hdd3)
 
 print(f"Before expansion: {raid5.getSUMcapacity()} GB")
+print("test")
 
 new_hdd = HDD("Disk4", 1000)
 print(raid5.expandRAID(new_hdd))
