@@ -66,7 +66,11 @@ def clear_data():
         messagebox.showwarning("Warining","Please choose raid level.")
 
 def recovery_data():
-    {}
+    if raid != None:
+        raid.recovery()
+        simulate()
+    else:
+        messagebox.showwarning("Warining","Please choose raid level.")
 
 
 def destroy_drive():
@@ -108,6 +112,7 @@ def destroy_drive():
         popup.destroy()
         if raid != None:
             raid.destroy(drive_index-1)
+            simulate()
         else:
             messagebox.showwarning("Warining","Please choose raid level.")
 
