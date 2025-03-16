@@ -95,17 +95,18 @@ def destroy_drive():
     dropdown = ttk.Combobox(popup, values=options, width=20, state='readonly')
     dropdown.pack(pady=20)
 
-    # Function to get the selected value from the dropdown
-    def on_select(event):
-        selected_value = dropdown.get()
-        print(f"Selected value: {selected_value}")
-    
-    # Bind the select event to the dropdown
-    dropdown.bind("<<ComboboxSelected>>", on_select)
+    warn_label = tk.Label(popup, text="Please choose a drive to destroy.", font=("Arial", 10), fg="red")
 
     # Button to close the popup
-    btn_close = tk.Button(popup, text="Select", command=popup.destroy, width=15)
+    btn_close = tk.Button(popup, text="Select", command=lambda: {destroy(int(dropdown.get()[7:len(dropdown.get())])) if len(dropdown.get()) != 0 else warn()}, width=15)
     btn_close.pack(pady=10)
+
+    def warn():
+        warn_label.pack()
+
+    def destroy(drive_index):
+        popup.destroy()
+        print(drive_index)
 
 def simulate():
 
