@@ -106,7 +106,10 @@ def destroy_drive():
 
     def destroy(drive_index):
         popup.destroy()
-        print(drive_index)
+        if raid != None:
+            raid.destroy(drive_index-1)
+        else:
+            messagebox.showwarning("Warining","Please choose raid level.")
 
 def simulate():
 
