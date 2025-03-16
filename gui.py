@@ -98,7 +98,7 @@ def destroy_drive():
     popup.geometry(f"{popup_width}x{popup_height}+{position_left}+{position_top}")
 
     # Add a dropdown (Combobox) to the popup window
-    options = [f"Drive #{drive}" for drive in range(int(amount_spinbox.get()))]
+    options = [f"Drive #{drive + 1}" for drive in range(int(amount_spinbox.get()))]
     dropdown = ttk.Combobox(popup, values=options, width=20, state='readonly')
     dropdown.pack(pady=20)
 
