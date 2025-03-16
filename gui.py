@@ -30,9 +30,9 @@ def confirm_level():
 
 def update_summary(total_data, used_data, remaining_data):
 
-    summary_total.config(text=f"Capacity: {total_data}")
-    summary_used.config(text=f"Used: {used_data}")
-    summary_remaining.config(text=f"Space: {remaining_data}")
+    summary_total.config(text=f"Capacity: {total_data} bytes")
+    summary_used.config(text=f"Used: {used_data} bytes")
+    summary_remaining.config(text=f"Space: {remaining_data} bytes")
 
 def write_data():
     text = entry.get()
