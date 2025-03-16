@@ -39,6 +39,8 @@ def write_data():
 
             except ValueError as e:
                 messagebox.showwarning("Error", e)
+            except TypeError as e:
+                messagebox.showwarning("Error", "Cannot write data while disks failed.")
         else:
             messagebox.showwarning("Warning","Please specify the data.")
     else:
