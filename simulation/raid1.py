@@ -65,7 +65,8 @@ class Raid1Simulation(RaidSimulation):
 
             # Read data from the first drive (as all drives are identical)
             drive = self.drives[0]  # Just read from the first drive, others are identical
-            block_data.extend(drive[start_position:start_position + self.block_size])
+            if drive != None:
+                block_data.extend(drive[start_position:start_position + self.block_size])
 
             result.extend(block_data)
 

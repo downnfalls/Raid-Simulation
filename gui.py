@@ -200,13 +200,13 @@ level_combobox.current(0)  # ตั้งค่าเริ่มต้นเป
 # confirm_button.pack(pady=5)
 
 # **แสดงผลสรุปข้อมูล (แยกเป็นบรรทัด)**
-summary_total = tk.Label(left_frame, text="Capacity: -", font=("sans", 10))
+summary_total = tk.Label(left_frame, text="Capacity: - bytes", font=("Arial", 10))
 summary_total.pack(pady=2)
 
-summary_used = tk.Label(left_frame, text="Used: -", font=("Arial", 10))
+summary_used = tk.Label(left_frame, text="Used: - bytes", font=("Arial", 10))
 summary_used.pack(pady=2)
 
-summary_remaining = tk.Label(left_frame, text="Space: -", font=("Arial", 10))
+summary_remaining = tk.Label(left_frame, text="Space: - bytes", font=("Arial", 10))
 summary_remaining.pack(pady=2)
 
 # **เฟรมสำหรับช่องใส่ค่า (จะซ่อนตอนแรก)**
