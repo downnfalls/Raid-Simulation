@@ -18,11 +18,11 @@ def confirm_level():
         right_textbox.config(state="disable")
         center_textbox.config(state="disable")
 
-def update_summary(total_data, used_data, remaining_data):
+def update_summary():
+    summary_total.config(text=f"Capacity: {raid.total_size() if raid is not None else '-'} bytes")
+    summary_used.config(text=f"Used: {raid.size_in_use() if raid is not None else '-'} bytes")
+    summary_remaining.config(text=f"Space: {raid.space_in_raid() if raid is not None else '-'} bytes")
 
-    summary_total.config(text=f"Capacity: {total_data} bytes")
-    summary_used.config(text=f"Used: {used_data} bytes")
-    summary_remaining.config(text=f"Space: {remaining_data} bytes")
 
 def write_data():
     data = entry.get()
@@ -30,9 +30,12 @@ def write_data():
     if raid != None:
         if data:
             try:
+
+                raid.clear()
                 raid.write(data)
                 entry.delete(0, tk.END)
                 simulate()
+                update_summary()
 
             except ValueError as e:
                 messagebox.showwarning("Error", e)
@@ -45,9 +48,16 @@ def read_data():
     {}
 
 def clear_data():
+    if raid != None:
+        raid.clear()
+        simulate()
+    else:
+        messagebox.showwarning("Warining","Please choose raid level.")
+
+def recovery_data():
     {}
 
-def restore_data():
+def destroy_drive():
     {}
 
 def simulate():
@@ -91,8 +101,7 @@ def calculate():
         if raid != None:
             resize_window()
             confirm_level()
-            update_summary(raid.total_size(), raid.size_in_use(), raid.space_in_raid())
-
+            update_summary()
             simulate()
 
     except ValueError as e:
@@ -153,21 +162,29 @@ center_frame = tk.Frame(root)
 
 # widget in center frame
 tk.Label(center_frame, text="Input Data").pack()
-entry = tk.Entry(center_frame, width=50)
+entry = tk.Entry(center_frame, width=40)
 entry.pack(pady=5)
 data = entry.get()
 
-btn_write = tk.Button(center_frame, text="Write Data", command=write_data, width=15)
-btn_write.pack(pady=5)
+buttons_frame1 = tk.Frame(center_frame)
 
-btn_clear = tk.Button(center_frame, text="Destroy Drive", command=clear_data, width=15)
-btn_clear.pack(pady=5)
+buttons_frame1.grid_rowconfigure(0, weight=1, pad=5)
+buttons_frame1.grid_rowconfigure(1, weight=1, pad=5)
 
-btn_restore = tk.Button(center_frame, text="Recovery Data", command=restore_data, width=15)
-btn_restore.pack(pady=5)
+# Create buttons and place them in a row using grid
+btn_write = tk.Button(buttons_frame1, text="Write Data", command=write_data, width=15)
+btn_write.grid(row=0, column=0, padx=5)
 
-btn_add = tk.Button(center_frame, text="Read Data", command=read_data, width=15)
-btn_add.pack(pady=5)
+btn_clear = tk.Button(buttons_frame1, text="Clear Data", command=clear_data, width=15)
+btn_clear.grid(row=0, column=1, padx=5)
+
+btn_destroy = tk.Button(buttons_frame1, text="Destroy Drive", command=destroy_drive, width=15)
+btn_destroy.grid(row=1, column=0, padx=5)
+
+btn_recovery = tk.Button(buttons_frame1, text="Recovery Data", command=recovery_data, width=15)
+btn_recovery.grid(row=1, column=1, padx=5)
+
+buttons_frame1.pack(pady=5)
 
 # widget in center frame
 
@@ -175,11 +192,14 @@ btn_add.pack(pady=5)
 data_frame = tk.Frame(center_frame)
 data_frame.pack(pady=5)
 
-curr_data = tk.Label(center_frame, text="ข้อมูลปัจจุบัน :", font=("Arial", 10))
+curr_data = tk.Label(center_frame, text="Data Output", font=("Arial", 10))
 curr_data.pack(pady=5)
 
+btn_read = tk.Button(center_frame, text="Read Data", command=read_data, width=15)
+btn_read.pack(padx=5)
+
 # **เพิ่ม Listbox สำหรับแสดงข้อมูลใต้ปุ่ม "อ่านข้อมูล"**
-center_textbox = tk.Text(center_frame, width=30, height=11)
+center_textbox = tk.Text(center_frame, width=35, height=11)
 center_textbox.pack(pady=5)
 
 # **สร้างเฟรมด้านขวา (ยังคงอยู่เหมือนเดิม)**
@@ -193,6 +213,9 @@ simulate_button = tk.Button(right_frame, text="Simulate Output", command=simulat
 simulate_button.pack(pady=10)
 
 right_textbox.pack()
+
+
+
 
 # เริ่มรัน GUI
 root.mainloop()
