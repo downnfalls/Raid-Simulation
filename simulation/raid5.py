@@ -25,7 +25,7 @@ class Raid5Simulation(RaidSimulation):
 
         total_data_length = len(data)
 
-        if total_data_length > self.space_in_raid():
+        if total_data_length > self.total_size():
             raise ValueError("Not enough space in the RAID to write the data.")
 
         current_block = 0

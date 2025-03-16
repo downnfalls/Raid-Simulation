@@ -49,6 +49,10 @@ class RaidSimulation(ABC):
 
         self.drives[drive] = None
 
+    def clear(self):
+
+        self.drives = [bytearray(len(drive)) for drive in self.drives]
+
     @abstractmethod
     def recovery(self):
         pass
