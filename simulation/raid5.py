@@ -84,7 +84,7 @@ class Raid5Simulation(RaidSimulation):
         Return a string representation of the simulated drives (showing the mirrored view with parity).
         """
         return "\n".join(
-            f"Drive #{str(drive)}:\n "
+            f"Drive #{str(drive+1)}:\n "
             + ("\n Failed" if self.drives[drive] == None else "\n ".join(
                 "  ".join(f"{str(byte).rjust(3, '0')}({' ' if byte == 0 else chr(byte)})".ljust(6) for byte in self.drives[drive][i:i + 8])
                 for i in range(0, len(self.drives[drive]), 8)
