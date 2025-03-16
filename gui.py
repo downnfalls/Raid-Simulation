@@ -68,8 +68,44 @@ def clear_data():
 def recovery_data():
     {}
 
+
 def destroy_drive():
-    {}
+    # Create a new top-level window (popup)
+    popup = tk.Toplevel()
+    popup.resizable(False, False)
+    popup.title("Select Drive")
+    
+    # Set the size of the popup window
+    popup_width = 250
+    popup_height = 140
+
+    # Get the screen width and height
+    screen_width = popup.winfo_screenwidth()
+    screen_height = popup.winfo_screenheight()
+
+    # Calculate the position to center the popup window
+    position_top = int(screen_height / 2 - popup_height / 2)
+    position_left = int(screen_width / 2 - popup_width / 2)
+
+    # Set the position and size of the popup window
+    popup.geometry(f"{popup_width}x{popup_height}+{position_left}+{position_top}")
+
+    # Add a dropdown (Combobox) to the popup window
+    options = [f"Drive #{drive}" for drive in range(int(amount_spinbox.get()))]
+    dropdown = ttk.Combobox(popup, values=options, width=20, state='readonly')
+    dropdown.pack(pady=20)
+
+    # Function to get the selected value from the dropdown
+    def on_select(event):
+        selected_value = dropdown.get()
+        print(f"Selected value: {selected_value}")
+    
+    # Bind the select event to the dropdown
+    dropdown.bind("<<ComboboxSelected>>", on_select)
+
+    # Button to close the popup
+    btn_close = tk.Button(popup, text="Select", command=popup.destroy, width=15)
+    btn_close.pack(pady=10)
 
 def simulate():
 
@@ -122,8 +158,16 @@ def calculate():
 # main window
 root = tk.Tk()
 root.title("Raid Simulation")
-root.geometry("300x300")
 root.resizable(False,False)
+# Get the screen width and height
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+
+# Calculate the position to center the popup window
+position_top = int(screen_height / 2 - 300 / 2)
+position_left = int(screen_width / 2 - 300 / 2)
+
+root.geometry(f"300x300+{position_left}+{position_top}")
 
 def resize_window():
     root.geometry("1100x450")  # Change window size to 600x400
