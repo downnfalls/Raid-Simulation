@@ -4,23 +4,12 @@ from simulation.raid import RaidSimulation
 class Raid0Simulation(RaidSimulation):
 
     def __init__(self, drives, block_size=1):
-        """
-        Initialize the RAID 0 simulation.
         
-        :param drives: List of drive sizes in bytes.
-        :param block_size: Size of each block for striping (in bytes).
-        """
         super().__init__(drives)
         self.block_size = block_size
 
     def write(self, data):
-        
-        """
-        Simulate writing data to the RAID 0 array by striping across the drives.
-        
-        :param data: Data to write (string or bytes).
-        :raises ValueError: If there is not enough space to write the data.
-        """
+
         if isinstance(data, str):
             data = data.encode()  # Convert string to bytes
             
@@ -36,6 +25,7 @@ class Raid0Simulation(RaidSimulation):
 
         # Iterate through the blocks and stripe them across the drives
         for i in range(blocks_needed):
+            
             start_idx = i * self.block_size
             end_idx = start_idx + self.block_size
             block_data = data[start_idx:end_idx]
@@ -60,11 +50,7 @@ class Raid0Simulation(RaidSimulation):
         self.used_space += total_data_length
 
     def read(self):
-        """
-        Simulate reading the RAID 0 data from the drives by reassembling the blocks.
-        
-        :return: The read data as bytes.
-        """
+
         result = bytearray()
         total_blocks = math.ceil(self.used_space / self.block_size)
 
@@ -76,16 +62,15 @@ class Raid0Simulation(RaidSimulation):
             # Read the data from each drive based on the block index
             for j in range(self.num_drives):
                 drive = self.drives[j]
-                block_data.extend(drive[start_position:start_position + self.block_size])
+                if (drive != None):
+                    block_data.extend(drive[start_position:start_position + self.block_size])
 
             result.extend(block_data)
 
         return (bytes(result)).decode()
 
     def simulate_output(self):
-        """
-        Return a string representation of the simulated drives.
-        """
+
         return "\n".join(
             f"Drive #{str(drive+1)}:\n "
             + ("\n Failed" if self.drives[drive] == None else "\n ".join(
@@ -96,25 +81,17 @@ class Raid0Simulation(RaidSimulation):
         )
     
     def total_size(self):
-        """
-        Calculate the total size of the RAID 0 setup (sum of all drive sizes).
-        """
+
         return sum(len(drive) for drive in self.drives)
 
     def size_in_use(self):
-        """
-        Return the total amount of used space in the RAID 0 setup.
-        :return: The used space in bytes.
-        """
+
         return self.used_space
 
     def space_in_raid(self):
-        """
-        Return the available space in the RAID 0 setup.
-        :return: The available space in bytes.
-        """
 
         return self.total_size() - self.size_in_use()
     
     def recovery(self):
+
         raise ValueError("Raid 0 cannot recovery data")

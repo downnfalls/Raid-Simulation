@@ -3,12 +3,7 @@ from simulation.raid import RaidSimulation
 
 class Raid10Simulation(RaidSimulation):
     def __init__(self, drives, block_size=1):
-        """
-        Initialize the RAID 10 simulation.
         
-        :param drives: List of drive sizes in bytes (must be an even number for mirroring).
-        :param block_size: Size of each block for striping (in bytes).
-        """
         if len(drives) % 2 != 0:
             raise ValueError("RAID 10 requires an even number of drives for mirroring.")
         
@@ -17,12 +12,7 @@ class Raid10Simulation(RaidSimulation):
         self.num_mirrored_pairs = len(drives) // 2
 
     def write(self, data):
-        """
-        Simulate writing data to the RAID 10 array by striping across mirrored pairs.
         
-        :param data: Data to write (string or bytes).
-        :raises ValueError: If there is not enough space to write the data.
-        """
         if isinstance(data, str):
             data = data.encode()
 
@@ -52,11 +42,7 @@ class Raid10Simulation(RaidSimulation):
         self.used_space += total_data_length
 
     def read(self):
-        """
-        Simulate reading the RAID 10 data from the primary drives (striping order).
         
-        :return: The read data as bytes.
-        """
         result = bytearray()
         total_blocks = math.ceil(self.used_space / self.block_size)
 
@@ -74,9 +60,7 @@ class Raid10Simulation(RaidSimulation):
         return (bytes(result)).decode()
 
     def simulate_output(self):
-        """
-        Return a string representation of the simulated drives.
-        """
+        
         return "\n".join(
             f"Drive #{str(drive+1)}:\n " + ("\n Failed" if self.drives[drive] == None else "\n ".join(
                 "  ".join(f"{str(byte).rjust(3, '0')}({' ' if byte == 0 else chr(byte)})".ljust(6) for byte in self.drives[drive][i:i + 8])
@@ -86,30 +70,19 @@ class Raid10Simulation(RaidSimulation):
         )
 
     def total_size(self):
-        """
-        Calculate the total usable storage in RAID 10 (sum of half the drives).
-        """
+        
         return sum(len(drive) for drive in self.drives[:self.num_mirrored_pairs])
 
     def size_in_use(self):
-        """
-        Return the total amount of used space in the RAID 10 setup.
-        """
+        
         return self.used_space
 
     def space_in_raid(self):
-        """
-        Return the available space in the RAID 10 setup.
-        """
+        
         return self.total_size() - self.size_in_use()
     
     def recovery(self):
-        """
-        Simulate the recovery of failed drives in a RAID 10 setup.
-        
-        :param failed_drives: List of indices of the failed drives.
-        :raises ValueError: If the failed drives are not part of the RAID array.
-        """
+       
         failed_drives = []
         for i in range(self.num_drives):
             if self.drives[i] is None:

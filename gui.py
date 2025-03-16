@@ -67,8 +67,11 @@ def clear_data():
 
 def recovery_data():
     if raid != None:
-        raid.recovery()
-        simulate()
+        try:
+            raid.recovery()
+            simulate()
+        except ValueError as e:
+            messagebox.showwarning("Error", e)
     else:
         messagebox.showwarning("Warining","Please choose raid level.")
 

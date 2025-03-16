@@ -4,12 +4,7 @@ from simulation.raid import RaidSimulation
 class Raid1Simulation(RaidSimulation):
 
     def __init__(self, drives, block_size=1):
-        """
-        Initialize the RAID 1 simulation.
         
-        :param drives: List of drive sizes in bytes.
-        :param block_size: Size of each block for striping (in bytes).
-        """
         super().__init__(drives)
         self.block_size = block_size
 
@@ -17,12 +12,7 @@ class Raid1Simulation(RaidSimulation):
         self.smallest_drive_size = min(len(drive) for drive in self.drives)
 
     def write(self, data):
-        """
-        Simulate writing data to the RAID 1 array by mirroring across all drives.
         
-        :param data: Data to write (string or bytes).
-        :raises ValueError: If there is not enough space to write the data.
-        """
         if isinstance(data, str):
             data = data.encode()  # Convert string to bytes
             
@@ -64,11 +54,7 @@ class Raid1Simulation(RaidSimulation):
         self.used_space += total_data_length
 
     def read(self):
-        """
-        Simulate reading the RAID 1 data from any of the drives (they are identical).
         
-        :return: The read data as bytes.
-        """
         result = bytearray()
         total_blocks = math.ceil(self.smallest_drive_size / self.block_size)
 
@@ -86,9 +72,7 @@ class Raid1Simulation(RaidSimulation):
         return (bytes(result)).decode()
 
     def simulate_output(self):
-        """
-        Return a string representation of the simulated drives (mirror view of the drives).
-        """
+        
         return "\n".join(
             f"Drive #{str(drive+1)}:\n "
             + ("\n Failed" if self.drives[drive] == None else "\n ".join(
@@ -103,28 +87,17 @@ class Raid1Simulation(RaidSimulation):
         return self.smallest_drive_size
 
     def size_in_use(self):
-        """
-        Calculate the total used space in the RAID, considering that data is mirrored across all drives.
-        :return: The total used space in bytes.
-        """
+        
         # The used space is tracked by the self.used_space variable
         return self.used_space
 
     def space_in_raid(self):
-        """
-        Calculate the available space in the RAID.
-        :return: The available space in bytes.
-        """
+        
         # Available space is the total size of the smallest drive minus the used space
         return self.total_size() - self.size_in_use()
 
     def recovery(self):
-        """
-        Simulate recovering a failed drive in the RAID 1 array.
         
-        :param failed_drive_index: The index of the drive that needs to be recovered.
-        :raises ValueError: If the drive index is invalid or no healthy drive is available.
-        """
         failed_drive = None
         for i in range(self.num_drives):
             if self.drives[i] is None:

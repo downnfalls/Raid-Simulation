@@ -4,13 +4,7 @@ from simulation.raid import RaidSimulation
 class Raid5Simulation(RaidSimulation):
 
     def __init__(self, drives):
-        """
-        Initialize the RAID 5 simulation.
         
-        :param drives: List of drive sizes in bytes.
-        :param block_size: Size of each block for striping (in bytes).
-        """
-
         if len(drives) < 3:
             raise ValueError("Raid 5 Must be at least 3 drives.")
 
@@ -80,9 +74,7 @@ class Raid5Simulation(RaidSimulation):
         return data.decode()
 
     def simulate_output(self):
-        """
-        Return a string representation of the simulated drives (showing the mirrored view with parity).
-        """
+        
         return "\n".join(
             f"Drive #{str(drive+1)}:\n "
             + ("\n Failed" if self.drives[drive] == None else "\n ".join(
@@ -104,10 +96,7 @@ class Raid5Simulation(RaidSimulation):
         return self.total_size() - self.size_in_use()
 
     def recovery(self):
-        """
-        Simulate the recovery process for a failed drive in the RAID 5 array.
-        This will reconstruct the missing data based on the parity.
-        """
+        
         failed_drive = None
         for i in range(self.num_drives):
             if self.drives[i] is None:
