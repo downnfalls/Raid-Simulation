@@ -45,7 +45,18 @@ def write_data():
         messagebox.showwarning("Warining","Please choose raid level.")
 
 def read_data():
-    {}
+    if raid != None:
+        try:
+
+            center_textbox.config(state="normal")
+            center_textbox.delete(1.0, tk.END)
+            center_textbox.insert(tk.END, raid.read())
+            center_textbox.config(state="disable")
+
+        except ValueError as e:
+            messagebox.showwarning("Error", e)
+    else:
+        messagebox.showwarning("Warining","Please choose raid level.")
 
 def clear_data():
     if raid != None:
