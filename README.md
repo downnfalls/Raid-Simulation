@@ -1,1 +1,3 @@
-# software-raid
+# Raid Simulation
+
+Main class: gui.py
