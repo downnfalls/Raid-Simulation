@@ -10,6 +10,10 @@ class Raid5Simulation(RaidSimulation):
         :param drives: List of drive sizes in bytes.
         :param block_size: Size of each block for striping (in bytes).
         """
+
+        if len(drives) < 3:
+            raise ValueError("Raid 5 Must be at least 3 drives.")
+
         super().__init__(drives)
         self.blocks = len(drives)
         self.block_size = math.ceil(min(len(drive) for drive in self.drives) / self.blocks)
