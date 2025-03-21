@@ -64,6 +64,7 @@ def clear_data():
     if raid != None:
         raid.clear()
         simulate()
+        update_summary()
     else:
         messagebox.showwarning("Warining","Please choose raid level.")
 
