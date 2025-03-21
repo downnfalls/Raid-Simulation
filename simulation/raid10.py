@@ -12,7 +12,6 @@ class Raid10Simulation(RaidSimulation):
         self.num_mirrored_pairs = len(drives) // 2
 
     def write(self, data):
-        
         if isinstance(data, str):
             data = data.encode()
 
@@ -28,8 +27,10 @@ class Raid10Simulation(RaidSimulation):
             end_idx = start_idx + self.block_size
             block_data = data[start_idx:end_idx]
 
-            primary_drive = current_block % self.num_mirrored_pairs
-            mirror_drive = primary_drive + self.num_mirrored_pairs
+            # Updated logic for pairing: 0-1, 2-3, 4-5
+            pair_index = (current_block % self.num_mirrored_pairs) * 2
+            primary_drive = pair_index
+            mirror_drive = pair_index + 1
 
             start_position = (current_block // self.num_mirrored_pairs) * self.block_size
             end_position = start_position + len(block_data)
@@ -40,6 +41,7 @@ class Raid10Simulation(RaidSimulation):
             current_block += 1
 
         self.used_space += total_data_length
+
 
     def read(self):
         
@@ -60,14 +62,35 @@ class Raid10Simulation(RaidSimulation):
         return (bytes(result)).decode()
 
     def simulate_output(self):
-        
+        output = []
+        for i in range(0, self.num_drives, 2):
+            output.append(f"Mirror: Drive #{i + 1} <-> Drive #{i + 2}:\n")
+
+            # Print Primary Drive
+            if self.drives[i] is None:
+                output.append(f" Primary Drive #{i + 1}: FAILED\n")
+            else:
+                output.append(f" Primary Drive #{i + 1}:\n")
+                output.append(self.format_drive_output(self.drives[i]))
+
+            # Print Mirror Drive
+            if self.drives[i + 1] is None:
+                output.append(f" Mirror Drive #{i + 2}: FAILED\n")
+            else:
+                output.append(f" Mirror Drive #{i + 2}:\n")
+                output.append(self.format_drive_output(self.drives[i + 1]))
+
+            output.append("\n")
+
+        return ''.join(output)
+
+
+    def format_drive_output(self, drive):
         return "\n".join(
-            f"Drive #{str(drive+1)}:\n " + ("\n Failed" if self.drives[drive] == None else "\n ".join(
-                "  ".join(f"{str(byte).rjust(3, '0')}({' ' if byte == 0 else chr(byte)})".ljust(6) for byte in self.drives[drive][i:i + 8])
-                for i in range(0, len(self.drives[drive]), 8)
-            ))
-            for drive in range(self.num_mirrored_pairs * 2)
-        )
+            "  " + "  ".join(f"{str(byte).rjust(3, '0')}({' ' if byte == 0 else chr(byte)})".ljust(6) for byte in drive[i:i + 8])
+            for i in range(0, len(drive), 8)
+        ) + "\n"
+
 
     def total_size(self):
         
@@ -82,7 +105,6 @@ class Raid10Simulation(RaidSimulation):
         return self.total_size() - self.size_in_use()
     
     def recovery(self):
-       
         failed_drives = []
         for i in range(self.num_drives):
             if self.drives[i] is None:
@@ -91,27 +113,16 @@ class Raid10Simulation(RaidSimulation):
         if len(failed_drives) == 0:
             raise ValueError("No failed drive detected.")
 
-        if not isinstance(failed_drives, list):
-            raise ValueError("Failed drives must be provided as a list.")
-        
-        # Rebuild the data for the failed drives.
         for drive in failed_drives:
-            # Identify the mirrored pair.
-            mirror_drive = drive + self.num_mirrored_pairs if drive < self.num_mirrored_pairs else drive - self.num_mirrored_pairs
-            
-            # If the failed drive is in the first half (primary), recover from the mirror (secondary).
-            if drive < self.num_mirrored_pairs:
-                if self.drives[mirror_drive] is not None:
-                    # Copy data from the mirror drive.
-                    self.drives[drive] = self.drives[mirror_drive].copy()
-                else:
-                    raise ValueError(f"Both drives in the mirrored pair for drive {drive} are failed. Recovery cannot proceed.")
-            
-            # If the failed drive is in the second half (secondary), recover from the primary.
+            # Pair logic: if even, mirror is +1; if odd, mirror is -1
+            if drive % 2 == 0:
+                mirror_drive = drive + 1
             else:
-                if self.drives[mirror_drive] is not None:
-                    # Copy data from the primary drive.
-                    self.drives[drive] = self.drives[mirror_drive].copy()
-                else:
-                    raise ValueError(f"Both drives in the mirrored pair for drive {drive} are failed. Recovery cannot proceed.")
+                mirror_drive = drive - 1
+
+            if self.drives[mirror_drive] is not None:
+                self.drives[drive] = self.drives[mirror_drive].copy()
+            else:
+                raise ValueError(f"Both drives in the mirrored pair for drive {drive} are failed. Recovery cannot proceed.")
+
         
