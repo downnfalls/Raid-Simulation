@@ -44,7 +44,6 @@ class Raid10Simulation(RaidSimulation):
 
 
     def read(self):
-        
         result = bytearray()
         total_blocks = math.ceil(self.used_space / self.block_size)
 
@@ -52,14 +51,20 @@ class Raid10Simulation(RaidSimulation):
             start_position = i * self.block_size
             block_data = bytearray()
 
-            for j in range(self.num_mirrored_pairs):
-                drive = self.drives[j]  # Read from primary drives only
-                if (drive != None):
-                    block_data.extend(drive[start_position:start_position + self.block_size])
+            for j in range(0, self.num_drives, 2):  # Iterate over mirrored pairs
+                primary_drive = self.drives[j]
+                mirror_drive = self.drives[j + 1]
+
+                if primary_drive is not None:
+                    block_data.extend(primary_drive[start_position:start_position + self.block_size])
+                elif mirror_drive is not None:
+                    block_data.extend(mirror_drive[start_position:start_position + self.block_size])
+                else:
+                    raise ValueError(f"Both drives in mirrored pair {j}-{j+1} failed. Data cannot be read.")
 
             result.extend(block_data)
 
-        return (bytes(result)).decode()
+        return result.decode(errors='ignore')  # Ignore decoding errors for incomplete bytes
 
     def simulate_output(self):
         output = []
